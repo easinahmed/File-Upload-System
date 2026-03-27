@@ -1,17 +1,23 @@
 const express = require('express');
 const server = express();
 require('dotenv').config();
-const upload = require('./middleware/upload.middleware');
+const uploadMiddleware = require('./middleware/upload.middleware');
 const uploadController = require('./controller/upload.controller');
+const frontendRoute = require('./routes/frontend.route');
 
 const PORT = process.env.PORT || 5000;
 
-// Middleware to parse JSON bodies
+// Built in middleware to parse JSON bodies
 server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 
-// server.use(upload)
+// Serve static files from the "uploads" directory
+server.use(express.static('uploads'));
 
-server.post("/profile", upload.array('avatar'), uploadController);
+// Use frontend routes
+server.use(frontendRoute);
+
+server.post("/profile", uploadMiddleware.array('avatar'), uploadController);
 
 
 server.listen(PORT, () => {
